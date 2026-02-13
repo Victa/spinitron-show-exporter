@@ -7,6 +7,8 @@ A macOS desktop app that downloads radio shows from [Spinitron](https://spinitro
 
 > **A note from the author:** I built this app to archive my own radio show from the station I broadcast on, which uses Spinitron. My radio station only keeps shows archived for two weeks, and I wanted a solution to build my own personal archive. This tool is intended strictly for **personal use** — for DJs and hosts who want to keep a copy of their own shows. It is **not** designed or intended to download copyrighted content illegally. Please respect the rights of artists, stations, and content creators.
 
+![App Preview](App%20Preview.png)
+
 ## What It Does
 
 - **Downloads full shows** from any Spinitron station given a playlist URL.
