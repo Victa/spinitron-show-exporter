@@ -179,14 +179,73 @@ struct ContentView: View {
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
     private var exportingView: some View {
+        progressView(
+            title: "Exporting",
+            subtitle: exportFailed ? "An error occurred." : "Please wait\u{2026}",
+            showInFinderEnabled: false,
+            leadingButton: {
+                if exportFailed {
+                    Button("Back") {
+                        appState = .idle
+                        exportFailed = false
+                        logOutput = ""
+                    }
+                } else {
+                    Button("Cancel") { cancelExport() }
+                }
+            }
+        )
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // MARK: - Done View
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    private var doneView: some View {
+        progressView(
+            title: "Done!",
+            subtitle: "Thanks for your patience.",
+            showInFinderEnabled: true,
+            leadingButton: {
+                Button("Close") {
+                    showURL = ""
+                    coverImage = nil
+                    outputFormat = .audio
+                    debugMode = false
+                    logOutput = ""
+                    appState = .idle
+                }
+            }
+        )
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // MARK: - Shared Progress View
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    private func progressView<LeadingButton: View>(
+        title: String,
+        subtitle: String,
+        showInFinderEnabled: Bool,
+        @ViewBuilder leadingButton: () -> LeadingButton
+    ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            // ── Title ───────────────────────────────────────────────────
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Exporting")
-                    .font(.system(size: 13, weight: .bold))
-                Text(exportFailed ? "An error occurred." : "Please wait\u{2026}")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.secondary)
+            // ── Header: Title + Copy Log ────────────────────────────────
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.system(size: 13, weight: .bold))
+                    Text(subtitle)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("Copy Log") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(logOutput, forType: .string)
+                }
+                .buttonStyle(.borderless)
+                .disabled(logOutput.isEmpty)
             }
 
             // ── Log Area ────────────────────────────────────────────────
@@ -211,58 +270,15 @@ struct ContentView: View {
 
             // ── Bottom Actions ──────────────────────────────────────────
             HStack {
-                if exportFailed {
-                    Button("Back") {
-                        appState = .idle
-                        exportFailed = false
-                        logOutput = ""
-                    }
-                } else {
-                    Button("Cancel") { cancelExport() }
-                }
+                leadingButton()
                 Spacer()
-                Button("Copy Log") {
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(logOutput, forType: .string)
-                }
-                .buttonStyle(.borderless)
-                .disabled(logOutput.isEmpty)
-            }
-        }
-        .padding(20)
-    }
-
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // MARK: - Done View
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-    private var doneView: some View {
-        VStack(spacing: 0) {
-            Spacer()
-
-            // ── Centered content ─────────────────────────────────────
-            VStack(spacing: 16) {
-                Text("Done!")
-                    .font(.system(size: 13, weight: .bold))
                 Button("Show in Finder") {
                     NSWorkspace.shared.selectFile(nil, inFileViewerRootedAtPath: outputDir.path)
                 }
                 .buttonStyle(.borderedProminent)
-            }
-
-            Spacer()
-
-            // ── Bottom button ────────────────────────────────────────
-            Button("Export New Show") {
-                showURL = ""
-                coverImage = nil
-                outputFormat = .audio
-                debugMode = false
-                logOutput = ""
-                appState = .idle
+                .disabled(!showInFinderEnabled)
             }
         }
-        .frame(maxWidth: .infinity)
         .padding(20)
     }
 
