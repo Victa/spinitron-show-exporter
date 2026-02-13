@@ -10,3 +10,6 @@ xcuserdata/
 
 # Built app bundle
 *.app/
+
+# Cursor AI context
+.cursor/
