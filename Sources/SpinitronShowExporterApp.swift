@@ -35,6 +35,7 @@ struct ContentView: View {
     @State private var appState:      AppState = .idle
     @State private var showURL        = ""
     @State private var coverImage:    NSImage? = nil
+    @State private var coverImageName: String? = nil
     @State private var outputFormat   = OutputFormat.audio
     @State private var debugMode      = false
     @State private var outputDir      = FileManager.default.urls(for: .downloadsDirectory,
@@ -92,13 +93,31 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     // Cover Image
                     HStack {
-                        (Text("Cover Image ")
-                            .font(.system(size: 13, weight: .medium))
-                        + Text("(Optional)")
-                            .font(.system(size: 13, weight: .medium))
-                            .foregroundColor(.secondary))
-                        Spacer()
-                        Button("Choose File") { pickImage() }
+                        if let name = coverImageName {
+                            (Text("Cover Image ")
+                                .font(.system(size: 13, weight: .medium))
+                            + Text(name)
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(.secondary))
+                            Spacer()
+                            Button(role: .destructive) {
+                                coverImage = nil
+                                coverImageName = nil
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.borderless)
+                            Button("Change\u{2026}") { pickImage() }
+                        } else {
+                            (Text("Cover Image ")
+                                .font(.system(size: 13, weight: .medium))
+                            + Text("(Optional)")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundColor(.secondary))
+                            Spacer()
+                            Button("Choose File") { pickImage() }
+                        }
                     }
                     .frame(minHeight: 42)
                     .padding(.horizontal, 10)
@@ -210,6 +229,7 @@ struct ContentView: View {
                 Button("Close") {
                     showURL = ""
                     coverImage = nil
+                    coverImageName = nil
                     outputFormat = .audio
                     debugMode = false
                     logOutput = ""
@@ -295,6 +315,7 @@ struct ContentView: View {
         panel.message = "Choose a cover image"
         guard panel.runModal() == .OK, let url = panel.url else { return }
         coverImage = NSImage(contentsOf: url)
+        coverImageName = url.lastPathComponent
     }
 
     private func pickOutputDir() {
