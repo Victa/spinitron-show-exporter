@@ -1,0 +1,9 @@
+# Swift / SPM build artifacts
+.build/
+.swiftpm/
+*.xcodeproj/
+xcuserdata/
+
+# macOS
+.DS_Store
+*.dSYM/
