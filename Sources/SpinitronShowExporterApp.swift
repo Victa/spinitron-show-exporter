@@ -415,6 +415,7 @@ struct ContentView: View {
             DispatchQueue.main.async {
                 currentProcess = nil
                 if status == 0 {
+                    (NSSound(named: "Crystal") ?? NSSound(named: "Glass"))?.play()
                     appState = .done
                 } else if status == 15 {
                     // Cancelled — go back to idle
