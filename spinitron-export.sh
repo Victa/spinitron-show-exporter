@@ -533,6 +533,7 @@ if [[ "$VIDEO_MODE" == true ]]; then
       -loop 1 -framerate "$VIDEO_FPS" -i "$COVER_IMG" \
       -i "$NORM_AUDIO" \
       -map 0:v:0 -map 1:a:0 \
+      -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
       -c:v libx264 -preset "$VIDEO_PRESET" -tune stillimage -crf "$VIDEO_CRF" \
       -g 300 -keyint_min 300 \
       -pix_fmt yuv420p \

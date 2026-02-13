@@ -218,9 +218,15 @@ struct ContentView: View {
                         logOutput = ""
                     }
                 } else {
-                    Button("Cancel", role: .destructive) { cancelExport() }
+                    Button("Cancel") { cancelExport() }
                 }
                 Spacer()
+                Button("Copy Log") {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(logOutput, forType: .string)
+                }
+                .buttonStyle(.borderless)
+                .disabled(logOutput.isEmpty)
             }
         }
         .padding(20)
