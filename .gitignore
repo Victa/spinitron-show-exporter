@@ -7,3 +7,6 @@ xcuserdata/
 # macOS
 .DS_Store
 *.dSYM/
+
+# Built app bundle
+*.app/
